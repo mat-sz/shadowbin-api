@@ -1,0 +1,9 @@
+node_modules
+tmp
+*.log
+*.sqlite
+
+.env.local
+.env.production.local
+.env.development.local
+build
