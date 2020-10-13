@@ -8,11 +8,7 @@ import { randomBytes } from 'crypto';
 import { Context } from 'koa';
 
 import { User } from '../entities/User';
-import {
-  AuthenticationRequestUnion,
-  AuthenticationRequestType,
-  RefreshTokenStorage,
-} from '../models/AuthenticationRequest';
+import { AuthenticationRequest } from '../models/AuthenticationRequest';
 import {
   AuthenticationResponse,
   AuthenticationResponseResult,
@@ -48,7 +44,7 @@ export class AuthenticationService {
   }
 
   async authenticate(
-    request: AuthenticationRequestUnion,
+    request: AuthenticationRequest,
     context?: Context
   ): Promise<AuthenticationResponse> {
     const user = await this.userRepository.findOne({
@@ -62,28 +58,13 @@ export class AuthenticationService {
       };
     }
 
-    const method = user.authenticationMethods.find(
-      method =>
-        method.subtype === request.subtype && method.type === request.type
-    );
-
     let result = AuthenticationResponseResult.FAILURE;
     let token: string | undefined = undefined;
     let refreshToken: string | undefined = undefined;
     let expiresIn: number | undefined = undefined;
 
-    switch (request.type) {
-      case AuthenticationRequestType.PASSWORD:
-        if (await compare(request.data, method.data)) {
-          result = AuthenticationResponseResult.SUCCESS;
-        }
-        break;
-      case AuthenticationRequestType.OAUTH2:
-        break;
-      case AuthenticationRequestType.EXTENSION:
-        break;
-      default:
-        throw new Error('Unsupported authentication request type.');
+    if (await compare(request.password, user.password)) {
+      result = AuthenticationResponseResult.SUCCESS;
     }
 
     if (
@@ -119,16 +100,12 @@ export class AuthenticationService {
       });
     }
 
-    return this.handleCookieRefreshTokenStorage(
-      request,
-      {
-        result,
-        token,
-        refreshToken,
-        expiresIn,
-      },
-      context
-    );
+    return {
+      result,
+      token,
+      refreshToken,
+      expiresIn,
+    };
   }
 
   async refreshToken(
@@ -194,16 +171,12 @@ export class AuthenticationService {
       expiresIn,
     });
 
-    return this.handleCookieRefreshTokenStorage(
-      request,
-      {
-        success: true,
-        token,
-        refreshToken: (await this.createSession(user, context)).refreshToken,
-        expiresIn,
-      },
-      context
-    );
+    return {
+      success: true,
+      token,
+      refreshToken: (await this.createSession(user, context)).refreshToken,
+      expiresIn,
+    };
   }
 
   async twoFactorEnable(user: User) {
@@ -227,26 +200,5 @@ export class AuthenticationService {
     if (!authenticator.check(token, user.twoFactorSecret)) {
       throw new Error('Invalid token.');
     }
-  }
-
-  private handleCookieRefreshTokenStorage<T extends { refreshToken?: string }>(
-    request: AuthenticationRequestUnion | TwoFactorRequest,
-    result: T,
-    context: Context
-  ) {
-    if (
-      request.refreshTokenStorage === RefreshTokenStorage.COOKIES &&
-      typeof result['refreshToken'] === 'string'
-    ) {
-      const cookieExpirationDate = new Date();
-      cookieExpirationDate.setFullYear(cookieExpirationDate.getFullYear() + 1);
-      context.cookies.set('kreds_refresh_token', result.refreshToken, {
-        httpOnly: true,
-        expires: cookieExpirationDate,
-      });
-      delete result['refreshToken'];
-    }
-
-    return result as T;
   }
 }
