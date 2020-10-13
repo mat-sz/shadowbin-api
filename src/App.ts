@@ -8,6 +8,7 @@ import { createConnection, useContainer as useContainerTO } from 'typeorm';
 import { Container } from 'typedi';
 
 import { AuthenticationController } from './controllers/AuthenticationController';
+import { PasteController } from './controllers/PasteController';
 import { UserController } from './controllers/UserController';
 
 import { ErrorMiddleware } from './middlewares/ErrorMiddleware';
@@ -26,7 +27,7 @@ export default async function App(ormconfig: any) {
 
     const app = createKoaServer({
       cors: true,
-      controllers: [AuthenticationController, UserController],
+      controllers: [AuthenticationController, PasteController, UserController],
       middlewares: [ErrorMiddleware],
       defaultErrorHandler: false,
       authorizationChecker: async (action: Action, roles: string[]) => {
