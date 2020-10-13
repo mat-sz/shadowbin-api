@@ -79,6 +79,7 @@ export class AuthenticationService {
         status: AuthenticationStatus.AUTHENTICATED,
         uuid: user.uuid,
         name: user.name,
+        role: user.role,
       };
 
       expiresIn = parseInt(process.env.JWT_EXPIRY);
@@ -92,6 +93,7 @@ export class AuthenticationService {
         status: AuthenticationStatus.REQUIRE_2FA,
         uuid: user.uuid,
         name: user.name,
+        role: user.role,
       };
 
       expiresIn = parseInt(process.env.JWT_EXPIRY);
@@ -133,6 +135,7 @@ export class AuthenticationService {
       status: AuthenticationStatus.AUTHENTICATED,
       uuid: session.user.uuid,
       name: session.user.name,
+      role: session.user.role,
     };
     const expiresIn = parseInt(process.env.JWT_EXPIRY);
     const token = sign(data, process.env.JWT_SECRET, {
@@ -165,6 +168,7 @@ export class AuthenticationService {
       status: AuthenticationStatus.AUTHENTICATED,
       uuid: user.uuid,
       name: user.name,
+      role: user.role,
     };
     const expiresIn = parseInt(process.env.JWT_EXPIRY);
     const token = sign(data, process.env.JWT_SECRET, {

@@ -7,5 +7,6 @@ export enum AuthenticationStatus {
 export interface JWTData {
   uuid: string;
   name: string;
+  role?: string;
   status: AuthenticationStatus;
 }

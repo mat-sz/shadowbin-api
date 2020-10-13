@@ -37,8 +37,12 @@ export default async function App(ormconfig: any) {
           return false;
         }
 
-        for (const role of roles) {
-          if (!list.includes(role)) {
+        if (roles && roles.length > 0) {
+          if (!jwtData.role) {
+            return false;
+          }
+
+          if (!roles.includes(jwtData.role)) {
             return false;
           }
         }
@@ -61,7 +65,7 @@ export default async function App(ormconfig: any) {
     const ip = process.env.HTTP_IP || '127.0.0.1';
     app.listen(port, ip);
 
-    console.log('kreds/server listening on: ' + ip + ':' + port);
+    console.log('shadowbin-api listening on: ' + ip + ':' + port);
   } catch (e) {
     console.error(e);
   }
