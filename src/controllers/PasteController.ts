@@ -18,9 +18,7 @@ export class PasteController {
   private pasteService: PasteService;
 
   @Get('/')
-  async index() {
-    return await this.pasteService.all();
-  }
+  async index() {}
 
   @Post('/')
   async create() {}
