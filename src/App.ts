@@ -15,15 +15,12 @@ import { ErrorMiddleware } from './middlewares/ErrorMiddleware';
 import { getJWTData, isAuthenticated, hasUserData } from './Authentication';
 import { UserService } from './services/UserService';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function App(ormconfig: any) {
+export default async function App(ormconfig: never) {
   useContainerTO(Container);
   useContainerRC(Container);
 
   try {
-    await createConnection({
-      ...ormconfig,
-    });
+    await createConnection(ormconfig);
 
     const app = createKoaServer({
       cors: true,

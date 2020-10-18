@@ -4,7 +4,7 @@ import { hashSync } from 'bcrypt';
 import ormconfig from '../../ormconfig';
 import { User } from '../entities/User';
 
-export async function seed(ormconfig: any) {
+export async function seed(ormconfig: never) {
   const connection = await createConnection(ormconfig);
 
   const userRepository = connection.getRepository(User);
@@ -16,5 +16,5 @@ export async function seed(ormconfig: any) {
 }
 
 if (require.main === module) {
-  seed(ormconfig as any);
+  seed(ormconfig as never);
 }
