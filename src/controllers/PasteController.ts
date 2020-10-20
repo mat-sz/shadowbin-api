@@ -7,10 +7,12 @@ import {
   Authorized,
   Param,
   NotFoundError,
+  Body,
 } from 'routing-controllers';
 import { Inject } from 'typedi';
 
 import { PasteService } from '../services/PasteService';
+import { PasteCreationRequest } from '../models/PasteCreationRequest';
 
 @JsonController('/v1/paste')
 export class PasteController {
@@ -21,5 +23,9 @@ export class PasteController {
   async index() {}
 
   @Post('/')
-  async create() {}
+  async create(@Body() request: PasteCreationRequest) {
+    await this.pasteService.add(request.data);
+
+    return { success: true };
+  }
 }
