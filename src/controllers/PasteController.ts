@@ -24,8 +24,8 @@ export class PasteController {
 
   @Post('/')
   async create(@Body() request: PasteCreationRequest) {
-    await this.pasteService.add(request.data);
+    const result = await this.pasteService.add(request.data);
 
-    return { success: true };
+    return { success: true, id: result.id };
   }
 }
