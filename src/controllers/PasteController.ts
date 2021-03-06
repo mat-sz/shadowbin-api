@@ -28,4 +28,10 @@ export class PasteController {
 
     return { success: true, id: result.id };
   }
+
+  @Get('/:id/data')
+  async data() {}
+
+  @Get('/:id')
+  async paste() {}
 }
