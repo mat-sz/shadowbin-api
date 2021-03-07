@@ -25,13 +25,26 @@ export class PasteController {
   @Post('/')
   async create(@Body() request: PasteCreationRequest) {
     const result = await this.pasteService.add(request.data);
-
     return { success: true, id: result.id };
   }
 
   @Get('/:id/data')
-  async data() {}
+  async data(@Param('id') id: string) {
+    if (parseInt(id)) {
+      throw new Error('Id must be a string.');
+    }
+
+    const paste = await this.pasteService.byId(id);
+    return paste.data;
+  }
 
   @Get('/:id')
-  async paste() {}
+  async paste(@Param('id') id: string) {
+    if (parseInt(id)) {
+      throw new Error('Id must be a string.');
+    }
+
+    const paste = await this.pasteService.byId(id);
+    return { id: id, createdAt: paste.createdAt };
+  }
 }

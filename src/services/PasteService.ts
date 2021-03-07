@@ -12,8 +12,10 @@ export class PasteService {
   @OrmRepository(Paste)
   private pasteRepository: Repository<Paste>;
 
-  async byId(id: number) {
-    return await this.pasteRepository.findOne(id);
+  async byId(id: number | string) {
+    return await this.pasteRepository.findOne(
+      typeof id === 'string' ? (hashids.decode(id)[0] as number) : id
+    );
   }
 
   async add(data: string) {
