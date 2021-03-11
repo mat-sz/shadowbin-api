@@ -14,6 +14,8 @@ import { Inject } from 'typedi';
 import { PasteService } from '../services/PasteService';
 import { PasteCreationRequest } from '../models/PasteCreationRequest';
 
+const sizeLimit = parseInt(process.env.SIZE_LIMIT) || 5000;
+
 @JsonController('/v1/paste')
 export class PasteController {
   @Inject()
@@ -24,6 +26,10 @@ export class PasteController {
 
   @Post('/')
   async create(@Body() request: PasteCreationRequest) {
+    if (request.data.length > sizeLimit) {
+      throw new Error('Size limit exceeded.');
+    }
+
     const result = await this.pasteService.add(request.data);
     return { success: true, id: result.id };
   }
